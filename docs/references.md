@@ -29,6 +29,21 @@ Observed ESP32 archive metadata:
 - CDN target observed from the endpoint: `https://v4.cecdn.yun300.cn/100001_1909185148/A32-GDEY0154D67.rar`
 - Extracted folder inspected locally: `A32-GDEY0154D67-FP4G-20250212`
 
+## Partial Refresh LUT
+
+The 159-byte partial waveform LUT used by this component was cross-checked
+between two sources:
+
+- Good Display `GDEY0154D67` ESP32 sample (`A32-GDEY0154D67-FP4G-20250212`),
+  inspected locally as reference only.
+- ESPHome `waveshare_epaper` `WaveshareEPaper2P9InV2R2` driver
+  (`PARTIAL_UPD_2IN9_LUT`), which targets a 2.9 inch panel using the same
+  `SSD1681` controller family.
+
+Both sources agree on the waveform bytes. The trailing 6 bytes set VCOM and
+gate voltages inline with the `0x32` register write; these have not been
+validated against the `GDEY0154D67` datasheet voltage spec.
+
 ## ESPHome Context
 
 - ESPHome Waveshare e-paper docs: https://esphome.io/components/display/waveshare_epaper/

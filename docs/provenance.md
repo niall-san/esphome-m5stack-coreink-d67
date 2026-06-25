@@ -62,11 +62,11 @@ hardware testing proves a safe wake path for the CoreInk board.
 
 ## Upstream Readiness Checklist
 
-- Hardware photos added to `docs/hardware.md` or linked from the ledger.
-- Minimal ESPHome config validates and compiles.
-- The component has passed at least ten 60 second refresh cycles.
-- OTA recovery behaviour is documented.
-- The init sequence has been cross-checked against the `SSD1681` datasheet and
-  Good Display `GDEY0154D67` sample code.
-- Differences from ESPHome `1.54in-m5coreink-m09` and `1.54inv2` are documented.
-- Public license decision has been made before publishing the repo.
+- [ ] Hardware photos added to `docs/hardware.md` or linked from the ledger.
+- [x] Minimal ESPHome config validates and compiles (ESPHome 2026.6.2).
+- [ ] The component has passed at least ten 60 second refresh cycles (in progress).
+- [ ] OTA recovery behaviour is documented.
+- [x] The full-refresh init sequence has been cross-checked against the `SSD1681`
+      datasheet and Good Display `GDEY0154D67` ESP32 sample code.
+- [x] Differences from ESPHome `1.54in-m5coreink-m09` and `1.54inv2` are documented.
+- [x] Public license decision made: MIT.
