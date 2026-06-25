@@ -1,0 +1,61 @@
+substitutions:
+  name: m5stack-core-ink-d67-test
+  friendly_name: M5Stack CoreInk D67 Test
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  variant: esp32
+  flash_size: 4MB
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+external_components:
+  - source: ../components
+    components: [m5stack_coreink_d67]
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+
+font:
+  - file: "gfonts://Helvetica"
+    id: helvetica_20
+    size: 20
+
+button:
+  - platform: template
+    name: "CoreInk D67 Force Refresh"
+    on_press:
+      then:
+        - component.update: coreink_display
+
+display:
+  - platform: m5stack_coreink_d67
+    id: coreink_display
+    cs_pin: GPIO9
+    dc_pin: GPIO15
+    busy_pin: GPIO4
+    power_hold_pin: GPIO12
+    update_interval: 60s
+    lambda: |-
+      it.fill(Color::WHITE);
+      it.rectangle(0, 0, 200, 200, Color::BLACK);
+      it.print(10, 10, id(helvetica_20), Color::BLACK, "CoreInk D67");
+      it.print(10, 40, id(helvetica_20), Color::BLACK, "WHITE bg");
+      it.filled_rectangle(10, 80, 80, 40, Color::BLACK);
+      it.print(16, 90, id(helvetica_20), Color::WHITE, "BLACK");
+
