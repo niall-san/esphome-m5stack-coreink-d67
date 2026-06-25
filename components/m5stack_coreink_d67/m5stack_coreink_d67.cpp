@@ -57,7 +57,11 @@ void M5StackCoreInkD67::draw_absolute_pixel_internal(int x, int y, Color color) 
     return;
   }
 
-  const uint32_t pos = x + y * WIDTH;
+  // The CoreInk mounts this D67 panel opposite the vendor sample's native RAM
+  // orientation. Keep ESPHome lambdas in normal screen coordinates.
+  const int ram_x = WIDTH - 1 - x;
+  const int ram_y = HEIGHT - 1 - y;
+  const uint32_t pos = ram_x + ram_y * WIDTH;
   const uint32_t index = pos / 8;
   const uint8_t bit = 0x80 >> (pos % 8);
 
