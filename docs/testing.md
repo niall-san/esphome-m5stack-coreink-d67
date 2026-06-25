@@ -52,6 +52,11 @@ Required smoke tests:
 - No setup watchdog reboot.
 - No display update timeout during normal 60 second refresh.
 
+### Status (2026-06-25)
+
+All visual criteria met. Confirmed on commit `b9f3ccd` (Y-only orientation fix).
+Remaining: Wi-Fi/OTA smoke tests and ten-refresh stability run.
+
 ## Known Risks
 
 - The full-refresh command sequence has been aligned with the official Good

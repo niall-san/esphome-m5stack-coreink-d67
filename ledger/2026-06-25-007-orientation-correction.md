@@ -56,30 +56,33 @@ Planned command:
 
 ## Observed Logs
 
-No logs for the corrected build yet.
+Not captured for this flash.
 
 ## Physical Screen Result
 
-Pending second flash.
+### Second flash (commit bb7532e — 180° transform, both axes)
 
-Expected corrected result:
+- Image was right-side up but text was horizontally mirrored.
+- Root cause: "upside down and mirrored" from first flash was actually Y-only.
+  Upside-down text reads right-to-left so it appeared mirrored, but X was
+  always correct. The 180° fix introduced a spurious X flip.
 
+### Third flash (commit b9f3ccd — Y-only flip)
+
+- Rendered perfectly.
 - Physical white background.
 - Black border rectangle around the 200x200 screen.
 - Text upright and readable from normal CoreInk orientation.
 - Black filled rectangle with upright white `BLACK` text.
 
-## Photo Placeholder
-
-- `photos/2026-06-25-007-orientation-correction/`
-
 ## Conclusion
 
-The first hardware flash was electrically successful but orientation was wrong.
-A 180-degree logical coordinate transform is the smallest correction because it
-does not alter the now-proven full-refresh command path.
+The physical D67 panel only requires Y inversion (`pos = x + (HEIGHT-1-y)*WIDTH`).
+X is correct in the native data entry mode (X-increment). The gate driver scans
+bottom-to-top in the CoreInk mounted orientation, which is the sole transform
+needed.
 
 ## Next Step
 
-Compile and flash the correction over USB, then record the second physical
-screen result.
+Wi-Fi/OTA smoke tests: replace validation-only secrets with real credentials,
+reflash over USB, then exercise OTA update and ten automatic 60-second refreshes.
