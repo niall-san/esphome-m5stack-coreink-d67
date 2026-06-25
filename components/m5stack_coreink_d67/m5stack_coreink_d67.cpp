@@ -3,11 +3,40 @@
 #include "esphome/core/application.h"
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
+#include <cinttypes>
 
 namespace esphome {
 namespace m5stack_coreink_d67 {
 
 static const char *const TAG = "m5stack_coreink_d67";
+
+// Partial-refresh waveform LUT for SSD1681. Source: Good Display GDEY0154D67
+// ESP32 sample (A32-GDEY0154D67-FP4G-20250212), cross-checked against the
+// ESPHome waveshare_epaper WaveshareEPaper2P9InV2R2 driver which shares the
+// same controller and LUT format. The trailing 6 bytes set VCOM and gate
+// voltages inline with the 0x32 register write.
+static const uint8_t LUT_PARTIAL_SIZE = 159;
+static const uint8_t LUT_PARTIAL[LUT_PARTIAL_SIZE] = {
+    0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x80, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x40, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0x22, 0x22, 0x22, 0x22, 0x22, 0x22, 0x00, 0x00, 0x00,
+    0x22, 0x17, 0x41, 0xB0, 0x32, 0x36,
+};
 
 void M5StackCoreInkD67::setup() {
   this->init_internal_(BUFFER_SIZE);
@@ -37,7 +66,14 @@ void M5StackCoreInkD67::setup() {
 
 void M5StackCoreInkD67::update() {
   this->do_update_();
-  this->display_frame_();
+  bool full = (this->full_update_every_ == 1 || this->at_update_ == 0);
+  ESP_LOGD(TAG, "%s update", full ? "Full" : "Partial");
+  if (full) {
+    this->display_frame_();
+  } else {
+    this->display_frame_partial_();
+  }
+  this->at_update_ = (this->at_update_ + 1) % this->full_update_every_;
 }
 
 void M5StackCoreInkD67::dump_config() {
@@ -47,6 +83,7 @@ void M5StackCoreInkD67::dump_config() {
   LOG_PIN("  BUSY Pin: ", this->busy_pin_);
   LOG_PIN("  Power Hold Pin: ", this->power_hold_pin_);
   LOG_PIN("  Reset Pin: ", this->reset_pin_);
+  ESP_LOGCONFIG(TAG, "  Full Update Every: %" PRIu32, this->full_update_every_);
   LOG_UPDATE_INTERVAL(this);
 }
 
@@ -152,17 +189,60 @@ void M5StackCoreInkD67::display_frame_() {
   this->set_ram_area_();
   this->set_ram_counter_();
 
-  this->command(0x24);  // Write black/white image RAM
+  this->command(0x24);  // Write new image to BW RAM
   this->data(this->buffer_, BUFFER_SIZE);
 
-  this->command(0x22);  // Display update sequence
+  // Mirror the same image into the base RAM (0x26) so partial refresh has a
+  // clean reference frame after each full update.
+  this->set_ram_counter_();
+  this->command(0x26);
+  this->data(this->buffer_, BUFFER_SIZE);
+
+  this->command(0x22);  // Full refresh using OTP LUT
   this->data(0xF7);
-  this->command(0x20);  // Activate display update
+  this->command(0x20);
+  this->wait_until_idle_();
+}
+
+void M5StackCoreInkD67::display_frame_partial_() {
+  this->reset_();
+
+  this->command(0x32);  // Load partial waveform LUT
+  this->data(LUT_PARTIAL, LUT_PARTIAL_SIZE);
+
+  // Write display option register (partial mode configuration).
+  this->command(0x37);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(0x40);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(0x00);
+  this->data(0x00);
+
+  this->command(0x3C);  // Border waveform: VCOM DC GS transition
+  this->data(0x80);
+
+  // Enable clock and analog circuits without triggering a display update.
+  this->command(0x22);
+  this->data(0xC0);
+  this->command(0x20);
   this->wait_until_idle_();
 
-  // Good Display's standalone examples enter deep sleep after updates. CoreInk
-  // exposes no reset pin in our known wiring, and SSD1681 deep sleep normally
-  // needs hardware reset to wake, so keep the panel awake for ESPHome refreshes.
+  this->set_ram_area_();
+  this->set_ram_counter_();
+
+  this->command(0x24);  // Write new image to BW RAM
+  this->data(this->buffer_, BUFFER_SIZE);
+
+  // Display with loaded partial LUT, then power down circuits.
+  this->command(0x22);
+  this->data(0x0F);
+  this->command(0x20);
+  this->wait_until_idle_();
 }
 
 bool M5StackCoreInkD67::wait_until_idle_() {

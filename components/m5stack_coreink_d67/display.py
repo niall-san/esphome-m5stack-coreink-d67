@@ -5,6 +5,7 @@ from esphome.components import display, spi
 from esphome.const import (
     CONF_BUSY_PIN,
     CONF_DC_PIN,
+    CONF_FULL_UPDATE_EVERY,
     CONF_ID,
     CONF_LAMBDA,
     CONF_RESET_DURATION,
@@ -31,6 +32,7 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_BUSY_PIN, default="GPIO4"): pins.gpio_input_pin_schema,
             cv.Optional(CONF_POWER_HOLD_PIN, default="GPIO12"): pins.gpio_output_pin_schema,
             cv.Optional(CONF_RESET_PIN): pins.gpio_output_pin_schema,
+            cv.Optional(CONF_FULL_UPDATE_EVERY, default=30): cv.positive_int,
             cv.Optional(CONF_RESET_DURATION, default="10ms"): cv.All(
                 cv.positive_time_period_milliseconds,
                 cv.Range(max=core.TimePeriod(milliseconds=500)),
@@ -61,6 +63,8 @@ async def to_code(config):
     if CONF_POWER_HOLD_PIN in config:
         power_hold = await cg.gpio_pin_expression(config[CONF_POWER_HOLD_PIN])
         cg.add(var.set_power_hold_pin(power_hold))
+
+    cg.add(var.set_full_update_every(config[CONF_FULL_UPDATE_EVERY]))
 
     if CONF_RESET_PIN in config:
         reset = await cg.gpio_pin_expression(config[CONF_RESET_PIN])

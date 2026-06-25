@@ -22,6 +22,7 @@ class M5StackCoreInkD67 : public display::DisplayBuffer,
   void set_power_hold_pin(GPIOPin *power_hold_pin) { this->power_hold_pin_ = power_hold_pin; }
   void set_reset_pin(GPIOPin *reset_pin) { this->reset_pin_ = reset_pin; }
   void set_reset_duration(uint32_t reset_duration) { this->reset_duration_ = reset_duration; }
+  void set_full_update_every(uint32_t full_update_every) { this->full_update_every_ = full_update_every; }
 
   display::DisplayType get_display_type() override { return display::DisplayType::DISPLAY_TYPE_BINARY; }
 
@@ -42,6 +43,7 @@ class M5StackCoreInkD67 : public display::DisplayBuffer,
   void set_ram_area_();
   void set_ram_counter_();
   void display_frame_();
+  void display_frame_partial_();
   bool wait_until_idle_();
 
   GPIOPin *dc_pin_{nullptr};
@@ -49,6 +51,8 @@ class M5StackCoreInkD67 : public display::DisplayBuffer,
   GPIOPin *power_hold_pin_{nullptr};
   GPIOPin *reset_pin_{nullptr};
   uint32_t reset_duration_{10};
+  uint32_t full_update_every_{30};
+  uint32_t at_update_{0};
 };
 
 }  // namespace m5stack_coreink_d67
