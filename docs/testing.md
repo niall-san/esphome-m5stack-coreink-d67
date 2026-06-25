@@ -55,14 +55,19 @@ Required smoke tests:
 ### Status (2026-06-25)
 
 All visual criteria met. Confirmed on commit `b9f3ccd` (Y-only orientation fix).
-Remaining: Wi-Fi/OTA smoke tests and ten-refresh stability run.
+Partial refresh added in `7ddb3f1`; base-RAM sync fixed in `567343f`.
+
+Remaining hardware smoke tests:
+- Wi-Fi with real credentials → OTA update → reboot and power-latch recovery.
+- Ten automatic refreshes at 60 second intervals (full and partial paths).
+- Three-page Home Assistant dashboard (dial/button navigation, sensor data).
 
 ## Known Risks
 
-- The full-refresh command sequence has been aligned with the official Good
-  Display `GDEY0154D67` ESP32 sample, but it has not yet been flashed to the
-  CoreInk hardware.
-- The vendor examples deep-sleep after updates. This component does not do that
-  by default because the known CoreInk wiring has no reset pin.
 - `cs_pin` is still explicit in examples until the SPI schema/default behaviour
   is confirmed under ESPHome `2026.6.2`.
+- Partial refresh accumulates minor ghosting (inherent to waveform LUT). Clears
+  on full refresh every `full_update_every` cycles. Set to 10 in both examples.
+- Partial refresh LUT voltage bytes were sourced from the 2.9in V2R2 ESPHome
+  driver (same SSD1681 controller family). Not validated against the GDEY0154D67
+  datasheet voltage spec; monitor for display degradation over time.
