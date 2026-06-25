@@ -20,6 +20,15 @@ Do not blindly copy vendor sample code into this repository. Use it to confirm
 register sequences, command meanings, refresh timings, and busy polarity, then
 record the findings in the ledger.
 
+Observed ESP32 archive metadata:
+
+- Page title: `GDEY0154D67 ESP32 Sample Code`
+- Page file entry: `A32-GDEY0154D67`
+- Page issue time: `2025-02-18 15:21:02`
+- Download endpoint: `/comp/xcompanyFile/downloadNew.do?appId=24&fid=1777&id=1128`
+- CDN target observed from the endpoint: `https://v4.cecdn.yun300.cn/100001_1909185148/A32-GDEY0154D67.rar`
+- Extracted folder inspected locally: `A32-GDEY0154D67-FP4G-20250212`
+
 ## ESPHome Context
 
 - ESPHome Waveshare e-paper docs: https://esphome.io/components/display/waveshare_epaper/
@@ -36,4 +45,3 @@ Before opening an upstream ESPHome PR, collect:
 - Before/after config showing `1.54in-m5coreink-m09` failure, `1.54inv2` workaround, and this component's result.
 - Confirmation of busy polarity, reset behaviour, and color polarity.
 - A minimal, maintainable init sequence traced to public docs or clean-room interpretation of sample code.
-

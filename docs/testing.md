@@ -54,7 +54,10 @@ Required smoke tests:
 
 ## Known Risks
 
-- The initial SSD1681 command sequence is a conservative first pass and has not
-  yet been compared against the vendor ESP32/Arduino sample code.
+- The full-refresh command sequence has been aligned with the official Good
+  Display `GDEY0154D67` ESP32 sample, but it has not yet been flashed to the
+  CoreInk hardware.
+- The vendor examples deep-sleep after updates. This component does not do that
+  by default because the known CoreInk wiring has no reset pin.
 - `cs_pin` is still explicit in examples until the SPI schema/default behaviour
   is confirmed under ESPHome `2026.6.2`.

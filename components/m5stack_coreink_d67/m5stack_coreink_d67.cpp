@@ -101,9 +101,9 @@ void M5StackCoreInkD67::reset_() {
 }
 
 void M5StackCoreInkD67::initialize_() {
-  // SSD1681-style initialization for a 200x200 panel. This is intentionally
-  // conservative until the sequence is checked against the vendor sample code
-  // on real hardware.
+  // Full-refresh setup follows Good Display's GDEY0154D67 ESP32 sample:
+  // X increments across each row while Y starts at the last gate line and
+  // decrements toward zero.
   this->command(0x12);  // SWRESET
   this->wait_until_idle_();
 
@@ -112,8 +112,8 @@ void M5StackCoreInkD67::initialize_() {
   this->data(0x00);
   this->data(0x00);
 
-  this->command(0x11);  // Data entry mode: X increment, Y increment
-  this->data(0x03);
+  this->command(0x11);  // Data entry mode: X increment, Y decrement
+  this->data(0x01);
 
   this->set_ram_area_();
   this->set_ram_counter_();
@@ -123,10 +123,6 @@ void M5StackCoreInkD67::initialize_() {
 
   this->command(0x18);  // Read built-in temperature sensor
   this->data(0x80);
-
-  this->command(0x21);  // Display update control
-  this->data(0x00);
-  this->data(0x80);
 }
 
 void M5StackCoreInkD67::set_ram_area_() {
@@ -135,9 +131,9 @@ void M5StackCoreInkD67::set_ram_area_() {
   this->data(0x18);  // 200 / 8 - 1
 
   this->command(0x45);  // Set RAM Y address start/end
-  this->data(0x00);
-  this->data(0x00);
   this->data(0xC7);  // 200 - 1
+  this->data(0x00);
+  this->data(0x00);
   this->data(0x00);
 }
 
@@ -146,7 +142,7 @@ void M5StackCoreInkD67::set_ram_counter_() {
   this->data(0x00);
 
   this->command(0x4F);  // RAM Y address counter
-  this->data(0x00);
+  this->data(0xC7);  // 200 - 1
   this->data(0x00);
   this->wait_until_idle_();
 }
@@ -162,6 +158,10 @@ void M5StackCoreInkD67::display_frame_() {
   this->data(0xF7);
   this->command(0x20);  // Activate display update
   this->wait_until_idle_();
+
+  // Good Display's standalone examples enter deep sleep after updates. CoreInk
+  // exposes no reset pin in our known wiring, and SSD1681 deep sleep normally
+  // needs hardware reset to wake, so keep the panel awake for ESPHome refreshes.
 }
 
 bool M5StackCoreInkD67::wait_until_idle_() {
@@ -184,4 +184,3 @@ bool M5StackCoreInkD67::wait_until_idle_() {
 
 }  // namespace m5stack_coreink_d67
 }  // namespace esphome
-
