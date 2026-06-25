@@ -8,6 +8,9 @@
 namespace esphome {
 namespace m5stack_coreink_d67 {
 
+// ESPHome display driver for the M5Stack CoreInk unit containing the
+// Good Display GDEY0154D67 (0154BN-D67-D2) 1.54 inch e-paper panel.
+// Controller: SSD1681. Resolution: 200×200, monochrome, SPI.
 class M5StackCoreInkD67 : public display::DisplayBuffer,
                            public spi::SPIDevice<spi::BIT_ORDER_MSB_FIRST, spi::CLOCK_POLARITY_LOW,
                                                  spi::CLOCK_PHASE_LEADING, spi::DATA_RATE_2MHZ> {
@@ -51,7 +54,11 @@ class M5StackCoreInkD67 : public display::DisplayBuffer,
   GPIOPin *power_hold_pin_{nullptr};
   GPIOPin *reset_pin_{nullptr};
   uint32_t reset_duration_{10};
+  // Trigger a full refresh every N updates; 1 means always full. Partial
+  // refresh accumulates minor ghosting over time, and a periodic full refresh
+  // clears it with a clean OTP waveform cycle.
   uint32_t full_update_every_{30};
+  // Counts up mod full_update_every_. Zero means "do a full refresh now."
   uint32_t at_update_{0};
 };
 

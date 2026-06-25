@@ -56,7 +56,7 @@ display:
       it.fill(Color::WHITE);
       it.rectangle(0, 0, 200, 200, Color::BLACK);
       it.print(10, 10, id(helvetica_20), Color::BLACK, "CoreInk D67");
-      it.print(10, 40, id(helvetica_20), Color::BLACK, "WHITE bg");
+      it.print(10, 40, id(helvetica_20), Color::BLACK, "Hello world");
       it.filled_rectangle(10, 80, 80, 40, Color::BLACK);
       it.print(16, 90, id(helvetica_20), Color::WHITE, "BLACK");
 
