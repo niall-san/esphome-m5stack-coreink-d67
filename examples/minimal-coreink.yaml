@@ -51,6 +51,7 @@ display:
     busy_pin: GPIO4
     power_hold_pin: GPIO12
     update_interval: 60s
+    full_update_every: 10
     lambda: |-
       it.fill(Color::WHITE);
       it.rectangle(0, 0, 200, 200, Color::BLACK);

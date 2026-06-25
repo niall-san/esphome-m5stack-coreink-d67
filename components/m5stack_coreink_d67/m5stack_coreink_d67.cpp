@@ -243,6 +243,12 @@ void M5StackCoreInkD67::display_frame_partial_() {
   this->data(0x0F);
   this->command(0x20);
   this->wait_until_idle_();
+
+  // Sync base RAM to the frame we just wrote so the next partial refresh
+  // compares against the correct previous state.
+  this->set_ram_counter_();
+  this->command(0x26);
+  this->data(this->buffer_, BUFFER_SIZE);
 }
 
 bool M5StackCoreInkD67::wait_until_idle_() {
