@@ -11,14 +11,19 @@
 - Interface: SPI
 - Color: black and white
 
-## Photo Placeholders
+## Photos
 
-Add photos before any public release:
+**Display rendering** — front of assembled CoreInk running the minimal example:
 
-- Front of assembled CoreInk:
-- Back removed, showing panel marking:
-- Close-up of `0154BN-D67-D2` marking:
-- Wiring/board overview if any modifications are made:
+![Display rendering correctly](images/display-rendering.jpeg)
+
+**Back label** — board silk screen reads `GDEW0154M09` but the installed panel is the D67 variant:
+
+![Back label showing GDEW0154M09 board marking](images/back-label.jpeg)
+
+**Panel marking** — back cover removed, `0154BN-D67-D2` label visible on the panel:
+
+![Panel with 0154BN-D67-D2 marking](images/panel-marking.jpeg)
 
 ## CoreInk Pins
 
