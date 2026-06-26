@@ -20,9 +20,7 @@ Add to your ESPHome config:
 
 ```yaml
 external_components:
-  - source:
-      type: git
-      url: https://github.com/niall-san/m5stack-coreink-d67-esphome
+  - source: github://niall-san/esphome-m5stack-coreink-d67
     components: [m5stack_coreink_d67]
 ```
 
@@ -30,7 +28,7 @@ Or clone locally and reference the path:
 
 ```yaml
 external_components:
-  - source: /path/to/m5stack-coreink-d67-esphome/components
+  - source: /path/to/esphome-m5stack-coreink-d67/components
     components: [m5stack_coreink_d67]
 ```
 
