@@ -111,7 +111,6 @@ Tested against ESPHome `2026.6.2`.
 ## Examples
 
 - [`examples/minimal-coreink.yaml`](examples/minimal-coreink.yaml) — bare minimum for flashing and verifying the display.
-- [`examples/home-assistant-dashboard.yaml`](examples/home-assistant-dashboard.yaml) — three-page Home Assistant display with dial navigation.
 
 ## Limitations
 
