@@ -17,6 +17,7 @@ logger:
 api:
   encryption:
     key: "<existing key>"
+  reboot_timeout: 24h
 
 ota:
   - platform: esphome
