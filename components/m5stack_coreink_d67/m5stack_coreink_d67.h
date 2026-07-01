@@ -27,6 +27,14 @@ class M5StackCoreInkD67 : public display::DisplayBuffer,
   void set_reset_duration(uint32_t reset_duration) { this->reset_duration_ = reset_duration; }
   void set_full_update_every(uint32_t full_update_every) { this->full_update_every_ = full_update_every; }
 
+  // Releases the board power latch (GPIO12). Call only when about to cut power —
+  // the board loses power immediately after this pin goes low.
+  void release_power() {
+    if (this->power_hold_pin_ != nullptr) {
+      this->power_hold_pin_->digital_write(false);
+    }
+  }
+
   display::DisplayType get_display_type() override { return display::DisplayType::DISPLAY_TYPE_BINARY; }
 
  protected:
